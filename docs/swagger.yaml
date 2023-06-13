@@ -1,0 +1,89 @@
+basePath: /api/v1
+definitions:
+  secret.Request:
+    properties:
+      key:
+        type: string
+      otp:
+        type: string
+    type: object
+  secret.Response:
+    properties:
+      key:
+        type: string
+      otp:
+        type: string
+    type: object
+  status.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+host: localhost
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /otp:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: query param
+        in: query
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/secret.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/status.Response'
+      summary: Send otp code
+      tags:
+      - auth
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: body param
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/secret.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/status.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/status.Response'
+      summary: Check OTP code
+      tags:
+      - auth
+swagger: "2.0"
