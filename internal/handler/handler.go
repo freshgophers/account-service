@@ -1,21 +1,24 @@
 package handler
 
 import (
-	"account-service/docs"
-	"account-service/internal/config"
 	"fmt"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/swaggo/http-swagger/v2"
 
+	"account-service/docs"
 	_ "account-service/docs"
+	"account-service/internal/config"
 	"account-service/internal/handler/http"
-	"account-service/internal/service/auth"
+	"account-service/internal/service/account"
+	"account-service/internal/service/otp"
 	"account-service/pkg/server/router"
 )
 
 type Dependencies struct {
-	Config      config.Config
-	AuthService *auth.Service
+	Config         config.Config
+	OTPService     *otp.Service
+	AccountService *account.Service
 }
 
 // Configuration is an alias for a function that will take in a pointer to a Handler and modify it
@@ -73,10 +76,12 @@ func WithHTTPHandler() Configuration {
 			httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", h.dependencies.Config.HTTP.Host)),
 		))
 
-		authHandler := http.NewAuthHandler(h.dependencies.AuthService)
+		otpHandler := http.NewOTPHandler(h.dependencies.OTPService)
+		accountHandler := http.NewAccountHandler(h.dependencies.AccountService)
 
 		h.HTTP.Route("/api/v1", func(r chi.Router) {
-			r.Mount("/otp", authHandler.OTPRoutes())
+			r.Mount("/otp", otpHandler.Routes())
+			r.Mount("/accounts", accountHandler.Routes())
 		})
 
 		return

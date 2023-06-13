@@ -14,6 +14,15 @@ definitions:
       success:
         type: boolean
     type: object
+  user.Request:
+    properties:
+      birth_date:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -27,6 +36,69 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /accounts/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/status.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/status.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/status.Response'
+      summary: Read the account from the database
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: body param
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/status.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/status.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/status.Response'
+      summary: Update the account in the database
+      tags:
+      - accounts
   /otp:
     get:
       consumes:
@@ -50,7 +122,7 @@ paths:
             $ref: '#/definitions/status.Response'
       summary: Send otp code
       tags:
-      - auth
+      - otp
     post:
       consumes:
       - application/json
@@ -66,6 +138,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/status.Response'
         "400":
           description: Bad Request
           schema:
@@ -76,5 +150,5 @@ paths:
             $ref: '#/definitions/status.Response'
       summary: Check OTP code
       tags:
-      - auth
+      - otp
 swagger: "2.0"

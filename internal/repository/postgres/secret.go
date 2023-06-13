@@ -35,7 +35,7 @@ func (s *SecretRepository) Create(ctx context.Context, data secret.Entity) (id s
 	return
 }
 
-func (s *SecretRepository) Get(ctx context.Context, id string) (dest secret.Entity, err error) {
+func (s *SecretRepository) GetByID(ctx context.Context, id string) (dest secret.Entity, err error) {
 	query := `
 		SELECT created_at, updated_at, id, secret, phone, attempts, status
 		FROM secrets
@@ -61,7 +61,6 @@ func (s *SecretRepository) Update(ctx context.Context, id string, data secret.En
 		args = append(args, id)
 		sets = append(sets, "updated_at=CURRENT_TIMESTAMP")
 		query := fmt.Sprintf("UPDATE secrets SET %s WHERE id=$%d", strings.Join(sets, ", "), len(args))
-		fmt.Println(query)
 
 		_, err = s.db.ExecContext(ctx, query, args...)
 		if err != nil && err != sql.ErrNoRows {

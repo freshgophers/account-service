@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	ACTIVE    = "ACTIVE"
-	EXPIRED   = "EXPIRED"
-	DISABLED  = "DISABLED"
-	CONFIRMED = "CONFIRMED"
+	ACTIVE    = "active"
+	EXPIRED   = "expired"
+	DISABLED  = "disabled"
+	CONFIRMED = "confirmed"
 )
 
 type Entity struct {

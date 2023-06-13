@@ -14,13 +14,14 @@ import (
 	"account-service/internal/config"
 	"account-service/internal/handler"
 	"account-service/internal/repository"
-	"account-service/internal/service/auth"
+	"account-service/internal/service/account"
+	"account-service/internal/service/otp"
 	"account-service/pkg/log"
 	"account-service/pkg/server"
 )
 
 const (
-	schema      = "account"
+	schema      = "accounts"
 	version     = "1.0.0"
 	description = "account-service"
 )
@@ -43,17 +44,27 @@ func Run() {
 	}
 	defer repositories.Close()
 
-	authService, err := auth.New(
-		auth.WithSecretRepository(repositories.Secret))
+	accountService, err := account.New(
+		account.WithUsersRepository(repositories.User))
 	if err != nil {
-		logger.Error("ERR_INIT_AUTH_SERVICE", zap.Error(err))
+		logger.Error("ERR_INIT_ACCOUNT_SERVICE", zap.Error(err))
+		return
+	}
+
+	otpService, err := otp.New(
+		otp.WithSecretRepository(repositories.Secret),
+		otp.WithAccountService(accountService),
+	)
+	if err != nil {
+		logger.Error("ERR_INIT_OTP_SERVICE", zap.Error(err))
 		return
 	}
 
 	handlers, err := handler.New(
 		handler.Dependencies{
-			Config:      cfg,
-			AuthService: authService,
+			Config:         cfg,
+			OTPService:     otpService,
+			AccountService: accountService,
 		},
 		handler.WithHTTPHandler())
 	if err != nil {

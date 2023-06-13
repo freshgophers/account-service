@@ -1,0 +1,11 @@
+### Send otp code
+GET http://localhost/api/v1/otp?phone=7776182855
+
+### Check OTP code
+POST http://localhost/api/v1/otp
+Content-Type: application/json
+
+{
+  "key": "25bf6095-318d-4326-808b-d94866d3bb80",
+  "otp": "0105"
+}

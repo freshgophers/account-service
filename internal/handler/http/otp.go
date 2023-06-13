@@ -1,6 +1,7 @@
 package http
 
 import (
+	"account-service/internal/service/otp"
 	"errors"
 	"net/http"
 
@@ -8,23 +9,22 @@ import (
 	"github.com/go-chi/render"
 
 	"account-service/internal/domain/secret"
-	"account-service/internal/service/auth"
 	"account-service/pkg/server/status"
 )
 
-type AuthHandler struct {
-	authService *auth.Service
+type OTPHandler struct {
+	otpService *otp.Service
 }
 
-func NewAuthHandler(a *auth.Service) *AuthHandler {
-	return &AuthHandler{authService: a}
+func NewOTPHandler(a *otp.Service) *OTPHandler {
+	return &OTPHandler{otpService: a}
 }
 
-func (h *AuthHandler) OTPRoutes() chi.Router {
+func (h *OTPHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	r.Get("/", h.sendOTP)
-	r.Post("/", h.checkOTP)
+	r.Get("/", h.send)
+	r.Post("/", h.check)
 
 	return r
 }
@@ -32,14 +32,14 @@ func (h *AuthHandler) OTPRoutes() chi.Router {
 // Send otp code
 //
 //	@Summary	Send otp code
-//	@Tags		auth
+//	@Tags		otp
 //	@Accept		json
 //	@Produce	json
 //	@Param		phone	query		string	true	"query param"
 //	@Success	200		{object}	status.Response
 //	@Failure	500		{object}	status.Response
 //	@Router		/otp [get]
-func (h *AuthHandler) sendOTP(w http.ResponseWriter, r *http.Request) {
+func (h *OTPHandler) send(w http.ResponseWriter, r *http.Request) {
 	phone := r.URL.Query().Get("phone")
 	if phone == "" {
 		err := errors.New("key: cannot be blank")
@@ -47,7 +47,7 @@ func (h *AuthHandler) sendOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.authService.SendOTP(r.Context(), phone)
+	res, err := h.otpService.Send(r.Context(), phone)
 	if err != nil {
 		render.Render(w, r, status.InternalServerError(err))
 		return
@@ -59,25 +59,26 @@ func (h *AuthHandler) sendOTP(w http.ResponseWriter, r *http.Request) {
 // Check OTP code
 //
 //	@Summary	Check OTP code
-//	@Tags		auth
+//	@Tags		otp
 //	@Accept		json
 //	@Produce	json
-//	@Param		request	body	secret.Request	true	"body param"
-//	@Success	200
-//	@Failure	400	{object}	status.Response
-//	@Failure	500	{object}	status.Response
+//	@Param		request	body		secret.Request	true	"body param"
+//	@Success	200		{object}	status.Response
+//	@Failure	400		{object}	status.Response
+//	@Failure	500		{object}	status.Response
 //	@Router		/otp [post]
-func (h *AuthHandler) checkOTP(w http.ResponseWriter, r *http.Request) {
+func (h *OTPHandler) check(w http.ResponseWriter, r *http.Request) {
 	req := secret.Request{}
 	if err := render.Bind(r, &req); err != nil {
 		render.Render(w, r, status.BadRequest(err, req))
 		return
 	}
 
-	if err := h.authService.CheckOTP(r.Context(), req); err != nil {
+	res, err := h.otpService.Check(r.Context(), req)
+	if err != nil {
 		render.Render(w, r, status.BadRequest(err, req))
 		return
 	}
 
-	render.JSON(w, r, status.NoContent())
+	render.JSON(w, r, status.OK(res))
 }

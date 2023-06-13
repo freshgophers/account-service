@@ -2,6 +2,7 @@ package repository
 
 import (
 	"account-service/internal/domain/secret"
+	"account-service/internal/domain/user"
 	"account-service/internal/repository/memory"
 	"account-service/internal/repository/postgres"
 	"account-service/pkg/store"
@@ -15,6 +16,7 @@ type Repository struct {
 	postgres *store.Database
 
 	Secret secret.Repository
+	User   user.Repository
 }
 
 // New takes a variable amount of Configuration functions and returns a new Repository
@@ -47,6 +49,7 @@ func WithMemoryStore() Configuration {
 	return func(s *Repository) (err error) {
 		// Create the memory store, if we needed parameters, such as connection strings they could be inputted here
 		s.Secret = memory.NewSecretRepository()
+		s.User = memory.NewUsersRepository()
 
 		return
 	}
@@ -67,6 +70,7 @@ func WithPostgresStore(schema, dataSourceName string) Configuration {
 		}
 
 		s.Secret = postgres.NewSecretRepository(s.postgres.Client)
+		s.User = postgres.NewUsersRepository(s.postgres.Client)
 
 		return
 	}

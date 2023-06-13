@@ -1,4 +1,4 @@
-package auth
+package otp
 
 import (
 	"context"
@@ -9,9 +9,10 @@ import (
 	"github.com/xlzd/gotp"
 
 	"account-service/internal/domain/secret"
+	"account-service/internal/domain/user"
 )
 
-func (s *Service) SendOTP(ctx context.Context, phone string) (res secret.Response, err error) {
+func (s *Service) Send(ctx context.Context, phone string) (res secret.Response, err error) {
 	data := secret.Entity{
 		CreatedAt: time.Now(),
 		Secret:    gotp.RandomSecret(16),
@@ -34,8 +35,8 @@ func (s *Service) SendOTP(ctx context.Context, phone string) (res secret.Respons
 	return
 }
 
-func (s *Service) CheckOTP(ctx context.Context, req secret.Request) (err error) {
-	data, err := s.secretRepository.Get(ctx, req.Key)
+func (s *Service) Check(ctx context.Context, req secret.Request) (res user.Response, err error) {
+	data, err := s.secretRepository.GetByID(ctx, req.Key)
 	if err != nil {
 		return
 	}
@@ -48,7 +49,10 @@ func (s *Service) CheckOTP(ctx context.Context, req secret.Request) (err error) 
 		return
 	}
 
-	if *data.Status != secret.CONFIRMED {
+	switch *data.Status {
+	case secret.CONFIRMED:
+		res, err = s.accountService.GetOrCreateByPhone(ctx, data.Phone)
+	default:
 		err = errors.New(data.GetText())
 	}
 

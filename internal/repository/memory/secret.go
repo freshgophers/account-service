@@ -44,7 +44,7 @@ func (r *SecretRepository) Create(ctx context.Context, data secret.Entity) (dest
 	return id, nil
 }
 
-func (r *SecretRepository) Get(ctx context.Context, id string) (dest secret.Entity, err error) {
+func (r *SecretRepository) GetByID(ctx context.Context, id string) (dest secret.Entity, err error) {
 	r.RLock()
 	defer r.RUnlock()
 

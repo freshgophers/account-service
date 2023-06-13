@@ -1,0 +1,10 @@
+### Read the account from the database
+GET http://localhost/api/v1/accounts/4aa6bdd6-446c-4710-8033-ff8469bb5aae
+
+### Update the account in the database
+PUT http://localhost/api/v1/accounts/4aa6bdd6-446c-4710-8033-ff8469bb5aae
+Content-Type: application/json
+
+{
+  "name": "Zhanserik"
+}
