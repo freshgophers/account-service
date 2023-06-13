@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"account-service/internal/config"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/swaggo/http-swagger/v2"
 
@@ -11,6 +13,7 @@ import (
 )
 
 type Dependencies struct {
+	Config      config.Config
 	AuthService *auth.Service
 }
 
@@ -65,7 +68,7 @@ func WithHTTPHandler() Configuration {
 		h.HTTP = router.New()
 
 		h.HTTP.Get("/swagger/*", httpSwagger.Handler(
-			httpSwagger.URL("http://localhost/swagger/doc.json"),
+			httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", h.dependencies.Config.HTTP.Host)),
 		))
 
 		authHandler := http.NewAuthHandler(h.dependencies.AuthService)
