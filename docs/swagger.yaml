@@ -7,13 +7,6 @@ definitions:
       otp:
         type: string
     type: object
-  secret.Response:
-    properties:
-      key:
-        type: string
-      otp:
-        type: string
-    type: object
   status.Response:
     properties:
       data: {}
@@ -52,7 +45,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/secret.Response'
+            $ref: '#/definitions/status.Response'
         "500":
           description: Internal Server Error
           schema:

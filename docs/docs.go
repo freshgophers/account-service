@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/secret.Response"
+                            "$ref": "#/definitions/status.Response"
                         }
                     },
                     "500": {
@@ -105,17 +105,6 @@ const docTemplate = `{
     },
     "definitions": {
         "secret.Request": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "otp": {
-                    "type": "string"
-                }
-            }
-        },
-        "secret.Response": {
             "type": "object",
             "properties": {
                 "key": {
