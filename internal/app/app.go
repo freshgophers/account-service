@@ -52,6 +52,7 @@ func Run() {
 
 	handlers, err := handler.New(
 		handler.Dependencies{
+			Config:      cfg,
 			AuthService: authService,
 		},
 		handler.WithHTTPHandler())

@@ -15,8 +15,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost",
-    "basePath": "/api/v1",
     "paths": {
         "/otp": {
             "get": {

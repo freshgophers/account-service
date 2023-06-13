@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"account-service/docs"
 	"account-service/internal/config"
 	"fmt"
 	"github.com/go-chi/chi/v5"
@@ -58,14 +59,15 @@ func New(d Dependencies, configs ...Configuration) (h *Handler, err error) {
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@host		localhost
-//	@BasePath	/api/v1
-
 // WithHTTPHandler applies a http handler to the Handler
 func WithHTTPHandler() Configuration {
 	return func(h *Handler) (err error) {
 		// Create the http handler, if we needed parameters, such as connection strings they could be inputted here
 		h.HTTP = router.New()
+
+		docs.SwaggerInfo.BasePath = "/api/v1"
+		docs.SwaggerInfo.Host = h.dependencies.Config.HTTP.Host
+		docs.SwaggerInfo.Schemes = []string{h.dependencies.Config.HTTP.Schema}
 
 		h.HTTP.Get("/swagger/*", httpSwagger.Handler(
 			httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", h.dependencies.Config.HTTP.Host)),
