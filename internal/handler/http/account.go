@@ -37,7 +37,7 @@ func (h *AccountHandler) Routes() chi.Router {
 //	@Tags		accounts
 //	@Accept		json
 //	@Produce	json
-//	@Param		id	path		int	true	"path param"
+//	@Param		id	path		string	true	"path param"
 //	@Success	200	{object}	status.Response
 //	@Failure	404	{object}	status.Response
 //	@Failure	500	{object}	status.Response
@@ -65,7 +65,7 @@ func (h *AccountHandler) get(w http.ResponseWriter, r *http.Request) {
 //	@Tags		accounts
 //	@Accept		json
 //	@Produce	json
-//	@Param		id		path	int				true	"path param"
+//	@Param		id		path	string			true	"path param"
 //	@Param		request	body	user.Request	true	"body param"
 //	@Success	200
 //	@Failure	400	{object}	status.Response

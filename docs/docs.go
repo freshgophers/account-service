@@ -39,7 +39,7 @@ const docTemplate = `{
                 "summary": "Read the account from the database",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "path param",
                         "name": "id",
                         "in": "path",
@@ -80,7 +80,7 @@ const docTemplate = `{
                 "summary": "Update the account in the database",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "path param",
                         "name": "id",
                         "in": "path",
