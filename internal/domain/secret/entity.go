@@ -24,6 +24,19 @@ type Entity struct {
 	Status    *string   `db:"status"`
 }
 
+func New(phone string) (dest Entity, otp string) {
+	dest = Entity{
+		CreatedAt: time.Now(),
+		Secret:    gotp.RandomSecret(16),
+		Phone:     phone,
+		Status:    &[]string{ACTIVE}[0],
+		Attempts:  &[]int{0}[0],
+	}
+	otp = gotp.NewTOTP(dest.Secret, 4, 60, nil).Now()
+
+	return
+}
+
 func (e *Entity) Validate(interval int64, attempts int, otp string) (err error) {
 	// check if secret is active
 	if *e.Status != ACTIVE {

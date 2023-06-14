@@ -14,10 +14,7 @@ func (s *Service) GetOrCreateByPhone(ctx context.Context, phone string) (res use
 	}
 
 	if err == store.ErrorNotFound {
-		data = user.Entity{
-			Phone: phone,
-			Type:  user.CUSTOMER,
-		}
+		data = user.New(phone, user.CUSTOMER)
 
 		data.ID, err = s.userRepository.Create(ctx, data)
 		if err != nil {

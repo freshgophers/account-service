@@ -18,3 +18,13 @@ type Entity struct {
 	Email     *string    `db:"email"`
 	BirthDate *time.Time `db:"birth_date"`
 }
+
+func New(phone, userType string) (dest Entity) {
+	dest = Entity{
+		CreatedAt: time.Now(),
+		Phone:     phone,
+		Type:      userType,
+	}
+
+	return
+}

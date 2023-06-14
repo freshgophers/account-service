@@ -5,23 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"time"
-
-	"github.com/xlzd/gotp"
 
 	"account-service/internal/domain/secret"
 	"account-service/internal/domain/user"
 )
 
 func (s *Service) Send(ctx context.Context, phone string) (res secret.Response, err error) {
-	data := secret.Entity{
-		CreatedAt: time.Now(),
-		Secret:    gotp.RandomSecret(16),
-		Phone:     phone,
-		Status:    &[]string{secret.ACTIVE}[0],
-		Attempts:  &[]int{0}[0],
-	}
-	otp := gotp.NewTOTP(data.Secret, 4, 60, nil).Now()
+	data, otp := secret.New(phone)
 
 	data.ID, err = s.secretRepository.Create(ctx, data)
 	if err != nil {
@@ -33,11 +23,7 @@ func (s *Service) Send(ctx context.Context, phone string) (res secret.Response, 
 		res.OTP = otp
 	} else {
 		message := fmt.Sprintf("%s код подтверждения. Никому не говорите код!", otp)
-
 		err = s.smsClient.Send(phone, message)
-		if err != nil {
-			return
-		}
 	}
 
 	return
