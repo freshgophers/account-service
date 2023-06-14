@@ -3,6 +3,7 @@ package otp
 import (
 	"account-service/internal/domain/secret"
 	"account-service/internal/service/account"
+	"account-service/pkg/sms"
 )
 
 // Configuration is an alias for a function that will take in a pointer to a Service and modify it
@@ -10,6 +11,7 @@ type Configuration func(s *Service) error
 
 // Service is an implementation of the Service
 type Service struct {
+	smsClient        *sms.Client
 	secretRepository secret.Repository
 	accountService   *account.Service
 }
@@ -45,6 +47,15 @@ func WithAccountService(accountService *account.Service) Configuration {
 	// Create the account service, if we needed parameters, such as connection strings they could be inputted here
 	return func(s *Service) error {
 		s.accountService = accountService
+		return nil
+	}
+}
+
+// WithSMSClient applies a given sms client to the Service
+func WithSMSClient(smsClient *sms.Client) Configuration {
+	// Create the sms client, if we needed parameters, such as connection strings they could be inputted here
+	return func(s *Service) error {
+		s.smsClient = smsClient
 		return nil
 	}
 }

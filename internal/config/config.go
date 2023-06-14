@@ -22,6 +22,7 @@ const (
 type (
 	Config struct {
 		HTTP     HTTPConfig
+		SMS      ClientConfig
 		POSTGRES DatabaseConfig
 	}
 
@@ -66,6 +67,11 @@ func New() (cfg Config, err error) {
 	}
 
 	err = envconfig.Process("HTTP", &cfg.HTTP)
+	if err != nil {
+		return
+	}
+
+	err = envconfig.Process("SMS", &cfg.SMS)
 	if err != nil {
 		return
 	}

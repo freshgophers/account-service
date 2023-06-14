@@ -1,6 +1,7 @@
 package app
 
 import (
+	"account-service/pkg/sms"
 	"context"
 	"flag"
 	"fmt"
@@ -36,6 +37,15 @@ func Run() {
 		return
 	}
 
+	// Dependencies
+	smsClient := sms.New(
+		sms.Credentials{
+			Endpoint: cfg.SMS.Endpoint,
+			Username: cfg.SMS.Username,
+			Password: cfg.SMS.Password,
+		})
+
+	// Initializations
 	repositories, err := repository.New(
 		repository.WithPostgresStore(schema, cfg.POSTGRES.DSN))
 	if err != nil {
@@ -52,6 +62,7 @@ func Run() {
 	}
 
 	otpService, err := otp.New(
+		otp.WithSMSClient(smsClient),
 		otp.WithSecretRepository(repositories.Secret),
 		otp.WithAccountService(accountService),
 	)

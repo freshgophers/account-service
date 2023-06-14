@@ -3,6 +3,7 @@ package otp
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -28,8 +29,15 @@ func (s *Service) Send(ctx context.Context, phone string) (res secret.Response, 
 	}
 	res = secret.ParseFromEntity(data)
 
-	if os.Getenv("DEBUG") != "" {
+	if os.Getenv("DEBUG") == "true" {
 		res.OTP = otp
+	} else {
+		message := fmt.Sprintf("%s код подтверждения. Никому не говорите код!", otp)
+
+		err = s.smsClient.Send(phone, message)
+		if err != nil {
+			return
+		}
 	}
 
 	return
