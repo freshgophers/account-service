@@ -8,7 +8,7 @@ import (
 
 	"account-service/internal/domain/user"
 	"account-service/internal/service/account"
-	"account-service/pkg/server/status"
+	"account-service/pkg/server/response"
 	"account-service/pkg/store"
 )
 
@@ -47,16 +47,16 @@ func (h *AccountHandler) get(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.accountService.GetByID(r.Context(), id)
 	if err != nil && err != store.ErrorNotFound {
-		render.Render(w, r, status.InternalServerError(err))
+		response.InternalServerError(w, r, err)
 		return
 	}
 
 	if err == store.ErrorNotFound {
-		render.Render(w, r, status.NotFound(err))
+		response.NotFound(w, r, err)
 		return
 	}
 
-	render.JSON(w, r, status.OK(res))
+	response.OK(w, r, res)
 }
 
 // Update the account in the database
@@ -77,18 +77,18 @@ func (h *AccountHandler) update(w http.ResponseWriter, r *http.Request) {
 
 	req := user.Request{}
 	if err := render.Bind(r, &req); err != nil {
-		render.Render(w, r, status.BadRequest(err, req))
+		response.BadRequest(w, r, err, req)
 		return
 	}
 
 	err := h.accountService.Update(r.Context(), id, req)
 	if err != nil && err != store.ErrorNotFound {
-		render.Render(w, r, status.InternalServerError(err))
+		response.InternalServerError(w, r, err)
 		return
 	}
 
 	if err == store.ErrorNotFound {
-		render.Render(w, r, status.NotFound(err))
+		response.NotFound(w, r, err)
 		return
 	}
 }

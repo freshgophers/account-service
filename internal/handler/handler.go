@@ -1,22 +1,22 @@
 package handler
 
 import (
-	"fmt"
+	"net/url"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/swaggo/http-swagger/v2"
 
-	"account-service/docs"
-	_ "account-service/docs"
+	"github.com/swaggo/swag/example/basic/docs"
+
 	"account-service/internal/config"
-	"account-service/internal/handler/http"
+	http2 "account-service/internal/handler/http"
 	"account-service/internal/service/account"
 	"account-service/internal/service/otp"
 	"account-service/pkg/server/router"
 )
 
 type Dependencies struct {
-	Config         config.Config
+	Configs        config.Config
 	OTPService     *otp.Service
 	AccountService *account.Service
 }
@@ -50,18 +50,6 @@ func New(d Dependencies, configs ...Configuration) (h *Handler, err error) {
 	return
 }
 
-//	@title			Swagger Example API
-//	@version		1.0
-//	@description	This is a sample server celler server.
-//	@termsOfService	http://swagger.io/terms/
-
-//	@contact.name	API Support
-//	@contact.url	http://www.swagger.io/support
-//	@contact.email	support@swagger.io
-
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
 // WithHTTPHandler applies a http handler to the Handler
 func WithHTTPHandler() Configuration {
 	return func(h *Handler) (err error) {
@@ -69,15 +57,21 @@ func WithHTTPHandler() Configuration {
 		h.HTTP = router.New()
 
 		docs.SwaggerInfo.BasePath = "/api/v1"
-		docs.SwaggerInfo.Host = h.dependencies.Config.HTTP.Host
-		docs.SwaggerInfo.Schemes = []string{h.dependencies.Config.HTTP.Schema}
+		docs.SwaggerInfo.Host = h.dependencies.Configs.HTTP.Host
+		docs.SwaggerInfo.Schemes = []string{h.dependencies.Configs.HTTP.Schema}
+
+		swaggerURL := url.URL{
+			Scheme: h.dependencies.Configs.HTTP.Schema,
+			Host:   h.dependencies.Configs.HTTP.Host,
+			Path:   "swagger/doc.json",
+		}
 
 		h.HTTP.Get("/swagger/*", httpSwagger.Handler(
-			httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", h.dependencies.Config.HTTP.Host)),
+			httpSwagger.URL(swaggerURL.String()),
 		))
 
-		otpHandler := http.NewOTPHandler(h.dependencies.OTPService)
-		accountHandler := http.NewAccountHandler(h.dependencies.AccountService)
+		otpHandler := http2.NewOTPHandler(h.dependencies.OTPService)
+		accountHandler := http2.NewAccountHandler(h.dependencies.AccountService)
 
 		h.HTTP.Route("/api/v1", func(r chi.Router) {
 			r.Mount("/otp", otpHandler.Routes())

@@ -1,15 +1,16 @@
 package http
 
 import (
-	"account-service/internal/service/otp"
 	"errors"
+
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 
 	"account-service/internal/domain/secret"
-	"account-service/pkg/server/status"
+	"account-service/internal/service/otp"
+	"account-service/pkg/server/response"
 )
 
 type OTPHandler struct {
@@ -43,17 +44,17 @@ func (h *OTPHandler) send(w http.ResponseWriter, r *http.Request) {
 	phone := r.URL.Query().Get("phone")
 	if phone == "" {
 		err := errors.New("key: cannot be blank")
-		render.Render(w, r, status.BadRequest(err, nil))
+		response.BadRequest(w, r, err, nil)
 		return
 	}
 
 	res, err := h.otpService.Send(r.Context(), phone)
 	if err != nil {
-		render.Render(w, r, status.InternalServerError(err))
+		response.InternalServerError(w, r, err)
 		return
 	}
 
-	render.JSON(w, r, status.OK(res))
+	response.OK(w, r, res)
 }
 
 // Check OTP code
@@ -70,15 +71,15 @@ func (h *OTPHandler) send(w http.ResponseWriter, r *http.Request) {
 func (h *OTPHandler) check(w http.ResponseWriter, r *http.Request) {
 	req := secret.Request{}
 	if err := render.Bind(r, &req); err != nil {
-		render.Render(w, r, status.BadRequest(err, req))
+		response.BadRequest(w, r, err, nil)
 		return
 	}
 
 	res, err := h.otpService.Check(r.Context(), req)
 	if err != nil {
-		render.Render(w, r, status.BadRequest(err, req))
+		response.BadRequest(w, r, err, nil)
 		return
 	}
 
-	render.JSON(w, r, status.OK(res))
+	response.OK(w, r, res)
 }

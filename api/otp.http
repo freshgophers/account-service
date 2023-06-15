@@ -6,6 +6,6 @@ POST http://localhost/api/v1/otp
 Content-Type: application/json
 
 {
-  "key": "93d65f9f-eaaa-41ea-acf0-3b9c310b7d7c",
-  "otp": "3575"
-}
+    "key": "2a9d22ed-9f76-4bd2-9a6d-9f13716e943a",
+    "otp": "4445"
+  }

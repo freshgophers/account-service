@@ -73,7 +73,7 @@ func Run() {
 
 	handlers, err := handler.New(
 		handler.Dependencies{
-			Config:         cfg,
+			Configs:        cfg,
 			OTPService:     otpService,
 			AccountService: accountService,
 		},
