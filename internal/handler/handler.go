@@ -6,10 +6,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/swaggo/http-swagger/v2"
 
-	"github.com/swaggo/swag/example/basic/docs"
-
+	"account-service/docs"
 	"account-service/internal/config"
-	http2 "account-service/internal/handler/http"
+	"account-service/internal/handler/http"
 	"account-service/internal/service/account"
 	"account-service/internal/service/otp"
 	"account-service/pkg/server/router"
@@ -70,8 +69,8 @@ func WithHTTPHandler() Configuration {
 			httpSwagger.URL(swaggerURL.String()),
 		))
 
-		otpHandler := http2.NewOTPHandler(h.dependencies.OTPService)
-		accountHandler := http2.NewAccountHandler(h.dependencies.AccountService)
+		otpHandler := http.NewOTPHandler(h.dependencies.OTPService)
+		accountHandler := http.NewAccountHandler(h.dependencies.AccountService)
 
 		h.HTTP.Route("/api/v1", func(r chi.Router) {
 			r.Mount("/otp", otpHandler.Routes())
