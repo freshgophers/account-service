@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS users
     birth_date      TIMESTAMP NULL
 );
 
+
+
 -- DATA --
 
 COMMIT;
